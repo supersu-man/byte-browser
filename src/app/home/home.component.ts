@@ -8,11 +8,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [ButtonModule, PanelModule, TreeTableModule, CommonModule, InputNumberModule, FormsModule],
-  templateUrl: './home.component.html',
-  styles: ``
+    selector: 'app-home',
+    imports: [ButtonModule, PanelModule, TreeTableModule, CommonModule, InputNumberModule, FormsModule],
+    templateUrl: './home.component.html',
+    styles: ``
 })
 export class HomeComponent {
 

@@ -1,23 +1,23 @@
 <div class="h-full p-4">
     <div class="flex">
-        <p-button label="Select Folder" (click)="getFolderStats()" [loading]="process_ongoing"/>
-        @if (process_ongoing) {
+        <p-button label="Select Folder" (click)="getFolderStats()" [loading]="process_ongoing()"/>
+        @if (process_ongoing()) {
             <p-button label="Cancel" class="px-2" (click)="killStats()"/> 
         }
         <div class="mx-auto"></div>
-        @if (stats.length > 0) {
-            <a class="p-button no-underline" [href]="uri" download='data.json'>Export</a>
+        @if (stats().length > 0) {
+            <a class="p-button no-underline" [href]="uri()" download='data.json'>Export</a>
         }
         <p-button class="px-2" label="Import" (click)="import()" />
     </div>
 
     <div class="mt-2">
         Minimum file size filter: 
-        <p-inputNumber class="mx-2" [(ngModel)]="searchFilter" mode="decimal" inputId="withoutgrouping" [useGrouping]="false"/> 
+        <p-inputNumber class="mx-2" [ngModel]="searchFilter()" (ngModelChange)="searchFilter.set($event)" mode="decimal" inputId="withoutgrouping" [useGrouping]="false"/> 
         MB
     </div>
 
-    <p-treeTable [value]="stats" styleClass="p-treetable-gridlines mt-2">
+    <p-treeTable [value]="stats()" styleClass="p-treetable-gridlines mt-2">
         <ng-template pTemplate="header">
             <tr>
                 <th>Name</th>
@@ -25,7 +25,7 @@
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-            @if (rowData.size > (searchFilter * 1024 *1024)) {
+            @if (rowData.size > (searchFilter() * 1024 * 1024)) {
                 <tr [ttRow]="rowNode">
                     <td>
                         <p-treeTableToggler [rowNode]="rowNode" />
@@ -36,7 +36,7 @@
             }
         </ng-template>
         <ng-template pTemplate="emptymessage">
-            @if (process_ongoing)  {
+            @if (process_ongoing())  {
 
                 <tr>
                     <td [attr.colspan]="2">Loading data</td>

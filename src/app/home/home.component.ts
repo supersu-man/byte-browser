@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, NgZone } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { MessageService, TreeNode } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { PanelModule } from 'primeng/panel';
@@ -15,38 +15,44 @@ import { FormsModule } from '@angular/forms';
 })
 export class HomeComponent {
 
-  window = (window as any)
-  process_ongoing = false
-  stats: TreeNode[] = []
-  uri = ''
-  searchFilter = 0
+  process_ongoing = signal(false);
+  stats = signal<TreeNode[]>([]);
+  uri = computed(() => {
+    return 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.stats()));
+  });
+  searchFilter = signal(0);
 
-  constructor (private messageService: MessageService, private zone: NgZone) { }
+  constructor (private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.window.api.onFolderStats((data: TreeNode[]) => {
-      this.zone.run(() => {
-        this.stats = data
-        this.process_ongoing = false
-        this.messageService.add({ severity: 'success', summary: 'Process complete', detail: 'Successfully fetched stats for '+ this.stats[0].data.path });
-      })
+    (window as any).api.onFolderStats((data: TreeNode[]) => {
+      this.stats.set(data);
+      this.process_ongoing.set(false);
+      const currentStats = this.stats();
+      if (currentStats && currentStats.length > 0) {
+        this.messageService.add({ 
+            severity: 'success', 
+            summary: 'Process complete', 
+            detail: 'Successfully fetched stats for ' + currentStats[0].data.path 
+        });
+      }
     })
   }
 
   getFolderStats = async () => {
-    const folderPath = await this.window.api.selectFolder();
-    this.process_ongoing = true
-    await this.window.api.callFolderStats(folderPath);
+    const folderPath = await (window as any).api.selectFolder();
+    this.process_ongoing.set(true);
+    await (window as any).api.callFolderStats(folderPath);
   }
 
   killStats = () => {
-    this.window.api.killFolderStats()
-    this.process_ongoing = false
+    (window as any).api.killFolderStats()
+    this.process_ongoing.set(false);
   }
 
   import = async () => {
-    const fileData = await this.window.api.importFile()
-    if(fileData) this.stats = JSON.parse(fileData)
+    const fileData = await (window as any).api.importFile()
+    if(fileData) this.stats.set(JSON.parse(fileData));
     this.messageService.add({ severity: 'success', summary: 'Import complete', detail: 'Successfully imported json' });
   }
 

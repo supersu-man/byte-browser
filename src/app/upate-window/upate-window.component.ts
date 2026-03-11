@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { ProgressBarModule } from 'primeng/progressbar';
 
 @Component({
@@ -9,15 +9,13 @@ import { ProgressBarModule } from 'primeng/progressbar';
 })
 export class UpateWindowComponent {
 
-  progress = 0
+  progress = signal(0);
 
-  constructor(private zone: NgZone) { }
+  constructor() { }
   
   ngOnInit(): void {
     (window as any).api.onUpdateProgress((progress: number) => {
-      this.zone.run(() => {
-        this.progress = parseFloat(progress.toFixed(2))
-      })
+      this.progress.set(parseFloat(progress.toFixed(2)));
     })
   }
 

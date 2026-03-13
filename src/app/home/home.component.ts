@@ -25,7 +25,7 @@ export class HomeComponent {
   constructor (private messageService: MessageService) { }
 
   ngOnInit(): void {
-    (window as any).api.onFolderStats((data: TreeNode[]) => {
+    window.api.onFolderStats((data: TreeNode[]) => {
       this.stats.set(data);
       this.process_ongoing.set(false);
       const currentStats = this.stats();
@@ -40,18 +40,18 @@ export class HomeComponent {
   }
 
   getFolderStats = async () => {
-    const folderPath = await (window as any).api.selectFolder();
+    const folderPath = await window.api.selectFolder();
     this.process_ongoing.set(true);
-    await (window as any).api.callFolderStats(folderPath);
+    await window.api.callFolderStats(folderPath);
   }
 
   killStats = () => {
-    (window as any).api.killFolderStats()
+    window.api.killFolderStats()
     this.process_ongoing.set(false);
   }
 
   import = async () => {
-    const fileData = await (window as any).api.importFile()
+    const fileData = await window.api.importFile()
     if(fileData) this.stats.set(JSON.parse(fileData));
     this.messageService.add({ severity: 'success', summary: 'Import complete', detail: 'Successfully imported json' });
   }

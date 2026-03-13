@@ -14,7 +14,7 @@ export class UpateWindowComponent {
   constructor() { }
   
   ngOnInit(): void {
-    (window as any).api.onUpdateProgress((progress: number) => {
+    window.api.onUpdateProgress((progress: number) => {
       this.progress.set(parseFloat(progress.toFixed(2)));
     })
   }
